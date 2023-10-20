@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import TaskCard from './components/TaskCard'
 
@@ -6,12 +6,21 @@ function App() {
   const [title,setTitle] = useState()
   const [info,setInfo] = useState()
   const [date,setDate] = useState()
-  const [taskList, setTaskList] = useState([]);
+  const [taskList, setTaskList] = useState([]);  
+
+  const localList = localStorage.getItem('items')
+
+  useEffect((localList)=>{
+    if(localList){
+      setTaskList(JSON.parse(localList))
+    }
+  },[localList])
 
   const handleSubmit = () => {
     if(title && info && date){
       const newTask = {title,info,date}
       setTaskList([...taskList, newTask])
+      localStorage.setItem('items',JSON.stringify([...taskList, newTask]))
     }
   }
 
@@ -20,12 +29,14 @@ function App() {
     setTitle('')
     setInfo('')
     setDate('')
+    localStorage.removeItem('items')
   }
 
   const handleDelete = (index) => {
     const updatedTaskList = [...taskList];
     updatedTaskList.splice(index, 1);
     setTaskList(updatedTaskList);
+    localStorage.setItem('items', JSON.stringify(updatedTaskList))
   };
 
 
